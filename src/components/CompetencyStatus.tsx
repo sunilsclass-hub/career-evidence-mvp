@@ -32,6 +32,8 @@ const evidenceKindLabel: Record<EvidenceKind, string> = {
   certificate: 'Certificate-based',
   presentation: 'Presentation-based',
   coursework: 'Coursework-based',
+  internship: 'Internship-based',
+  other: 'Other evidence',
   none: 'No evidence yet',
 };
 

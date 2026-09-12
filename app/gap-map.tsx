@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AppHeader } from '../src/components/AppHeader';
@@ -8,11 +9,13 @@ import { PrimaryButton } from '../src/components/PrimaryButton';
 import { ReadinessSnapshot } from '../src/components/ReadinessSnapshot';
 import { Screen } from '../src/components/Screen';
 import { SectionHeader } from '../src/components/SectionHeader';
-import { mockGapMap, mockReadinessSnapshot } from '../src/data/mockGapMap';
+import { mockGapMap } from '../src/data/mockGapMap';
 import { mockTargetJob } from '../src/data/mockTargetJob';
+import { useEvidence } from '../src/state/EvidenceContext';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
 import type { CompetencyStatusLevel } from '../src/types/competency';
+import { buildDemoGapMap, buildReadinessSnapshot } from '../src/utils/buildDemoGapMap';
 
 const groupOrder: { level: CompetencyStatusLevel; label: string }[] = [
   { level: 'strong', label: 'Strong evidence' },
@@ -21,8 +24,22 @@ const groupOrder: { level: CompetencyStatusLevel; label: string }[] = [
   { level: 'missing', label: 'Missing evidence' },
 ];
 
+const statusLabel: Record<CompetencyStatusLevel, string> = {
+  strong: 'Strong',
+  moderate: 'Moderate',
+  weak: 'Weak',
+  missing: 'Missing',
+};
+
 export default function GapMapScreen() {
   const router = useRouter();
+  const { evidence } = useEvidence();
+
+  const { gapMap, improvements } = useMemo(
+    () => buildDemoGapMap(mockGapMap, evidence),
+    [evidence],
+  );
+  const readinessSnapshot = useMemo(() => buildReadinessSnapshot(gapMap), [gapMap]);
 
   return (
     <Screen>
@@ -32,7 +49,33 @@ export default function GapMapScreen() {
         subtitle={`Target: ${mockTargetJob.role}`}
       />
 
-      <ReadinessSnapshot snapshot={mockReadinessSnapshot} />
+      <View style={styles.demoNotice}>
+        <Text style={styles.demoNoticeTitle}>Rule-based demo update</Text>
+        <Text style={styles.demoNoticeBody}>
+          This map changes when you add local evidence. Real AI verification
+          will be added later.
+        </Text>
+      </View>
+
+      <ReadinessSnapshot snapshot={readinessSnapshot} />
+
+      {improvements.length > 0 ? (
+        <View style={styles.improvementsCard}>
+          <Text style={styles.improvementsTitle}>
+            Updated from your demo evidence
+          </Text>
+          {improvements.map((improvement) => (
+            <Text key={improvement.skill} style={styles.improvementItem}>
+              • {improvement.skill} moved from {statusLabel[improvement.from]}{' '}
+              to {statusLabel[improvement.to]}
+            </Text>
+          ))}
+          <Text style={styles.improvementsFootnote}>
+            This is a rule-based demo update. Real AI evidence analysis will
+            be added later.
+          </Text>
+        </View>
+      ) : null}
 
       <View style={styles.claimBox}>
         <Text style={styles.claimText}>
@@ -41,7 +84,7 @@ export default function GapMapScreen() {
       </View>
 
       {groupOrder.map(({ level, label }) => {
-        const items = mockGapMap.filter((c) => c.status === level);
+        const items = gapMap.filter((c) => c.status === level);
         if (items.length === 0) return null;
         return (
           <View key={level} style={styles.group}>
@@ -68,6 +111,43 @@ export default function GapMapScreen() {
 }
 
 const styles = StyleSheet.create({
+  demoNotice: {
+    backgroundColor: colors.sampleBg,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  demoNoticeTitle: {
+    ...typography.caption,
+    color: colors.sampleText,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  demoNoticeBody: {
+    ...typography.caption,
+    color: colors.sampleText,
+  },
+  improvementsCard: {
+    backgroundColor: colors.strongBg,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+    gap: spacing.xs,
+  },
+  improvementsTitle: {
+    ...typography.subtitle,
+    color: colors.textPrimary,
+    marginBottom: spacing.xs,
+  },
+  improvementItem: {
+    ...typography.body,
+    color: colors.textPrimary,
+  },
+  improvementsFootnote: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    marginTop: spacing.sm,
+  },
   claimBox: {
     backgroundColor: colors.sampleBg,
     borderRadius: radius.md,

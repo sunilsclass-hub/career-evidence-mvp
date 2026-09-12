@@ -1,7 +1,14 @@
 export type CompetencyStatusLevel = 'strong' | 'moderate' | 'weak' | 'missing';
 
 /** What kind of evidence (if any) backs this competency. */
-export type EvidenceKind = 'project' | 'certificate' | 'presentation' | 'coursework' | 'none';
+export type EvidenceKind =
+  | 'project'
+  | 'certificate'
+  | 'presentation'
+  | 'coursework'
+  | 'internship'
+  | 'other'
+  | 'none';
 
 export interface CompetencyAssessment {
   skill: string;

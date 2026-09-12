@@ -1,4 +1,4 @@
-import type { CompetencyAssessment, EvidenceReadinessSnapshot } from '../types/competency';
+import type { CompetencyAssessment } from '../types/competency';
 
 export const mockGapMap: CompetencyAssessment[] = [
   {
@@ -56,10 +56,3 @@ export const mockGapMap: CompetencyAssessment[] = [
     reason: 'No supporting evidence found. Nothing yet shows an outcome, decision, or result you influenced.',
   },
 ];
-
-export const mockReadinessSnapshot: EvidenceReadinessSnapshot = {
-  strongCount: 3,
-  moderateCount: 2,
-  weakCount: 1,
-  criticalGapCount: 2,
-};

@@ -116,6 +116,10 @@ export default function AddEvidenceScreen() {
           placeholderTextColor={colors.textMuted}
         />
         <Text style={styles.hint}>Separate skills with commas.</Text>
+        <Text style={styles.hint}>
+          Try adding: Python, statistics, data cleaning, business
+          interpretation
+        </Text>
       </View>
 
       <View style={styles.field}>

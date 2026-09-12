@@ -68,8 +68,8 @@ export default function EvidenceVaultScreen() {
 
       <View style={styles.gapMapNote}>
         <Text style={styles.gapMapNoteText}>
-          This demo gap map uses sample analysis. In the next build phase,
-          evidence will be analysed dynamically.
+          This demo map will update using simple rules based on your local
+          evidence. Real AI review comes later.
         </Text>
       </View>
 
