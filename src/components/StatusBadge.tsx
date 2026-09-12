@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors } from '../theme/colors';
 import { radius, spacing, typography } from '../theme/spacing';
 
-type BadgeTone = 'sample' | 'success';
+type BadgeTone = 'sample' | 'success' | 'local';
 
 interface StatusBadgeProps {
   label: string;
@@ -13,6 +13,7 @@ interface StatusBadgeProps {
 const toneStyles: Record<BadgeTone, { bg: string; text: string }> = {
   sample: { bg: colors.sampleBg, text: colors.sampleText },
   success: { bg: colors.successBg, text: colors.success },
+  local: { bg: colors.strongBg, text: colors.strong },
 };
 
 export function StatusBadge({ label, tone = 'sample' }: StatusBadgeProps) {

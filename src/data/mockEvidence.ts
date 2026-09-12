@@ -6,21 +6,21 @@ export const mockEvidence: EvidenceItem[] = [
     title: 'Sales Dashboard Project',
     type: 'Project',
     demonstrates: ['Power BI', 'Data cleaning', 'Presentation'],
-    isSample: true,
+    origin: 'sample',
   },
   {
     id: 'ev-customer-db',
     title: 'Customer Database Assignment',
     type: 'Coursework',
     demonstrates: ['SQL', 'Database querying'],
-    isSample: true,
+    origin: 'sample',
   },
   {
     id: 'ev-business-presentation',
     title: 'Business Presentation',
     type: 'Presentation',
     demonstrates: ['Communication', 'Teamwork'],
-    isSample: true,
+    origin: 'sample',
   },
   {
     id: 'ev-python-certificate',
@@ -28,6 +28,6 @@ export const mockEvidence: EvidenceItem[] = [
     type: 'Certificate',
     demonstrates: ['Python'],
     note: 'A certificate alone is weaker evidence than a demonstrated project.',
-    isSample: true,
+    origin: 'sample',
   },
 ];

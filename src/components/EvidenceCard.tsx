@@ -14,9 +14,16 @@ export function EvidenceCard({ evidence }: EvidenceCardProps) {
     <View style={styles.card}>
       <View style={styles.headerRow}>
         <Text style={styles.type}>{evidence.type.toUpperCase()}</Text>
-        {evidence.isSample ? <StatusBadge label="Sample" tone="sample" /> : null}
+        {evidence.origin === 'sample' ? (
+          <StatusBadge label="Sample" tone="sample" />
+        ) : (
+          <StatusBadge label="Local demo only" tone="local" />
+        )}
       </View>
       <Text style={styles.title}>{evidence.title}</Text>
+      {evidence.description ? (
+        <Text style={styles.description}>{evidence.description}</Text>
+      ) : null}
       <Text style={styles.demonstratesLabel}>Demonstrates</Text>
       <View style={styles.chipRow}>
         {evidence.demonstrates.map((skill) => (
@@ -25,6 +32,9 @@ export function EvidenceCard({ evidence }: EvidenceCardProps) {
           </View>
         ))}
       </View>
+      {evidence.strengthNote ? (
+        <Text style={styles.strengthNote}>&ldquo;{evidence.strengthNote}&rdquo;</Text>
+      ) : null}
       {evidence.note ? <Text style={styles.note}>{evidence.note}</Text> : null}
     </View>
   );
@@ -55,6 +65,11 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     marginBottom: spacing.sm,
   },
+  description: {
+    ...typography.body,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
+  },
   demonstratesLabel: {
     ...typography.caption,
     color: colors.textMuted,
@@ -74,6 +89,12 @@ const styles = StyleSheet.create({
   chipText: {
     ...typography.caption,
     color: colors.textPrimary,
+  },
+  strengthNote: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    fontStyle: 'italic',
+    marginTop: spacing.sm,
   },
   note: {
     ...typography.caption,
