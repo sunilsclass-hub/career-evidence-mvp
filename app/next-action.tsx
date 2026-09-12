@@ -1,15 +1,18 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AppHeader } from '../src/components/AppHeader';
 import { PrimaryButton } from '../src/components/PrimaryButton';
 import { Screen } from '../src/components/Screen';
+import { SecondaryButton } from '../src/components/SecondaryButton';
 import { SectionHeader } from '../src/components/SectionHeader';
 import { mockNextAction } from '../src/data/mockNextAction';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
 
 export default function NextActionScreen() {
+  const router = useRouter();
   const [added, setAdded] = useState(false);
 
   return (
@@ -64,12 +67,18 @@ export default function NextActionScreen() {
       </Text>
 
       {added ? (
-        <View style={styles.successCard}>
-          <Text style={styles.successTitle}>Added to demo action plan</Text>
-          <Text style={styles.successBody}>
-            Next build step: we will later connect this to a real user
-            account and database.
-          </Text>
+        <View style={styles.successWrapper}>
+          <View style={styles.successCard}>
+            <Text style={styles.successTitle}>Added to demo action plan</Text>
+            <Text style={styles.successBody}>
+              Next build step: we will later connect this to a real user
+              account and database.
+            </Text>
+          </View>
+          <SecondaryButton
+            label="Give Pilot Feedback"
+            onPress={() => router.push('/pilot-feedback')}
+          />
         </View>
       ) : (
         <PrimaryButton
@@ -175,6 +184,9 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: spacing.lg,
     marginBottom: spacing.lg,
+  },
+  successWrapper: {
+    gap: spacing.md,
   },
   successCard: {
     backgroundColor: colors.successBg,
