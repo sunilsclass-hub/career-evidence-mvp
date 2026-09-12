@@ -10,8 +10,8 @@ import { ReadinessSnapshot } from '../src/components/ReadinessSnapshot';
 import { Screen } from '../src/components/Screen';
 import { SectionHeader } from '../src/components/SectionHeader';
 import { mockGapMap } from '../src/data/mockGapMap';
-import { mockTargetJob } from '../src/data/mockTargetJob';
 import { useEvidence } from '../src/state/EvidenceContext';
+import { useTargetJob } from '../src/state/TargetJobContext';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
 import type { CompetencyStatusLevel } from '../src/types/competency';
@@ -34,6 +34,7 @@ const statusLabel: Record<CompetencyStatusLevel, string> = {
 export default function GapMapScreen() {
   const router = useRouter();
   const { evidence } = useEvidence();
+  const { targetJob } = useTargetJob();
 
   const { gapMap, improvements } = useMemo(
     () => buildDemoGapMap(mockGapMap, evidence),
@@ -46,7 +47,7 @@ export default function GapMapScreen() {
       <AppHeader showBack step="Step 3 of 4" />
       <SectionHeader
         title="Your evidence vs. your target role"
-        subtitle={`Target: ${mockTargetJob.role}`}
+        subtitle={`Target: ${targetJob.role}`}
       />
 
       <View style={styles.demoNotice}>
