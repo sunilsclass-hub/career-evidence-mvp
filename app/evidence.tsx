@@ -8,14 +8,21 @@ import { PrimaryButton } from '../src/components/PrimaryButton';
 import { Screen } from '../src/components/Screen';
 import { SecondaryButton } from '../src/components/SecondaryButton';
 import { SectionHeader } from '../src/components/SectionHeader';
+import { TextButton } from '../src/components/TextButton';
 import { useEvidence } from '../src/state/EvidenceContext';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
 
 export default function EvidenceVaultScreen() {
   const router = useRouter();
-  const { evidence, sampleEvidence, localEvidence, justAddedTitle, clearJustAdded } =
-    useEvidence();
+  const {
+    evidence,
+    sampleEvidence,
+    localEvidence,
+    justAddedTitle,
+    clearJustAdded,
+    resetDemoEvidence,
+  } = useEvidence();
 
   useEffect(() => {
     return () => clearJustAdded();
@@ -66,6 +73,12 @@ export default function EvidenceVaultScreen() {
         />
       </View>
 
+      {localEvidence.length > 0 ? (
+        <View style={styles.resetRow}>
+          <TextButton label="Reset demo" onPress={resetDemoEvidence} />
+        </View>
+      ) : null}
+
       <View style={styles.gapMapNote}>
         <Text style={styles.gapMapNoteText}>
           This demo map will update using simple rules based on your local
@@ -114,6 +127,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   addEvidence: {
+    marginBottom: spacing.lg,
+  },
+  resetRow: {
     marginBottom: spacing.lg,
   },
   gapMapNote: {

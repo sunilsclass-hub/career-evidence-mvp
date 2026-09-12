@@ -4,14 +4,22 @@ import { StyleSheet, Text, View } from 'react-native';
 import { AppHeader } from '../src/components/AppHeader';
 import { PrimaryButton } from '../src/components/PrimaryButton';
 import { Screen } from '../src/components/Screen';
+import { SecondaryButton } from '../src/components/SecondaryButton';
 import { colors } from '../src/theme/colors';
 import { spacing, typography } from '../src/theme/spacing';
+
+const steps = [
+  'Choose a target role',
+  'Add genuine evidence',
+  'See evidence gaps',
+  'Build the next proof',
+];
 
 export default function WelcomeScreen() {
   const router = useRouter();
 
   return (
-    <Screen scroll={false}>
+    <Screen>
       <AppHeader />
       <View style={styles.body}>
         <Text style={styles.headline}>
@@ -19,17 +27,15 @@ export default function WelcomeScreen() {
           actually do.
         </Text>
 
-        <View style={styles.points}>
-          <Text style={styles.point}>• Choose the career you want</Text>
-          <Text style={styles.point}>
-            • Provide genuine evidence of your work
-          </Text>
-          <Text style={styles.point}>
-            • Discover what you can already prove
-          </Text>
-          <Text style={styles.point}>
-            • Identify what evidence is missing
-          </Text>
+        <View style={styles.steps}>
+          {steps.map((step, index) => (
+            <View key={step} style={styles.stepRow}>
+              <View style={styles.stepNumber}>
+                <Text style={styles.stepNumberText}>{index + 1}</Text>
+              </View>
+              <Text style={styles.stepText}>{step}</Text>
+            </View>
+          ))}
         </View>
       </View>
 
@@ -37,25 +43,62 @@ export default function WelcomeScreen() {
         label="Start My Career Evidence"
         onPress={() => router.push('/target-job')}
       />
+
+      <View style={styles.facilitatorRow}>
+        <SecondaryButton
+          label="Open Pilot Guide"
+          onPress={() => router.push('/pilot-guide')}
+        />
+        <Text style={styles.facilitatorHint}>For facilitator</Text>
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   body: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     gap: spacing.xl,
+    paddingVertical: spacing.xl,
   },
   headline: {
     ...typography.headline,
     color: colors.textPrimary,
   },
-  points: {
+  steps: {
+    gap: spacing.md,
+  },
+  stepRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
   },
-  point: {
+  stepNumber: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: colors.indigo,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepNumberText: {
+    ...typography.caption,
+    color: colors.white,
+    fontWeight: '700',
+  },
+  stepText: {
     ...typography.body,
     color: colors.textSecondary,
+    flex: 1,
+  },
+  facilitatorRow: {
+    marginTop: spacing.md,
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  facilitatorHint: {
+    ...typography.small,
+    color: colors.textMuted,
   },
 });

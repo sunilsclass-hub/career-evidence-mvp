@@ -28,6 +28,8 @@ interface EvidenceContextValue {
   justAddedTitle: string | null;
   addEvidence: (input: NewEvidenceInput) => void;
   clearJustAdded: () => void;
+  /** Discards all local evidence and restores the original sample set, for demo resets. */
+  resetDemoEvidence: () => void;
 }
 
 const EvidenceContext = createContext<EvidenceContextValue | undefined>(undefined);
@@ -55,6 +57,11 @@ export function EvidenceProvider({ children }: PropsWithChildren) {
 
   const clearJustAdded = useCallback(() => setJustAddedTitle(null), []);
 
+  const resetDemoEvidence = useCallback(() => {
+    setEvidence(mockEvidence.map((item) => ({ ...item })));
+    setJustAddedTitle(null);
+  }, []);
+
   const value = useMemo<EvidenceContextValue>(
     () => ({
       evidence,
@@ -63,8 +70,9 @@ export function EvidenceProvider({ children }: PropsWithChildren) {
       justAddedTitle,
       addEvidence,
       clearJustAdded,
+      resetDemoEvidence,
     }),
-    [evidence, justAddedTitle, addEvidence, clearJustAdded],
+    [evidence, justAddedTitle, addEvidence, clearJustAdded, resetDemoEvidence],
   );
 
   return <EvidenceContext.Provider value={value}>{children}</EvidenceContext.Provider>;

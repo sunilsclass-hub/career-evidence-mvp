@@ -7,6 +7,8 @@ import { PrimaryButton } from '../src/components/PrimaryButton';
 import { Screen } from '../src/components/Screen';
 import { SectionHeader } from '../src/components/SectionHeader';
 import { StatusBadge } from '../src/components/StatusBadge';
+import { TextButton } from '../src/components/TextButton';
+import { useEvidence } from '../src/state/EvidenceContext';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
 import type {
@@ -31,6 +33,7 @@ const payerOptions: readonly FeedbackPayer[] = [
 ];
 
 export default function PilotFeedbackScreen() {
+  const { resetDemoEvidence } = useEvidence();
   const [gapMapHelpful, setGapMapHelpful] = useState<GapMapHelpfulness | null>(null);
   const [nextActionUseful, setNextActionUseful] = useState<NextActionUsefulness | null>(
     null,
@@ -71,6 +74,9 @@ export default function PilotFeedbackScreen() {
           <Text style={styles.successNote}>
             In the real pilot, this would be securely saved with consent.
           </Text>
+          <View style={styles.resetRow}>
+            <TextButton label="Reset demo" onPress={resetDemoEvidence} />
+          </View>
         </View>
       </Screen>
     );
@@ -206,5 +212,8 @@ const styles = StyleSheet.create({
     ...typography.body,
     color: colors.textSecondary,
     textAlign: 'center',
+  },
+  resetRow: {
+    marginTop: spacing.md,
   },
 });
