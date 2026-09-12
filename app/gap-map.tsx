@@ -3,10 +3,12 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { AppHeader } from '../src/components/AppHeader';
 import { CompetencyStatus } from '../src/components/CompetencyStatus';
+import { EvidenceLogicBox } from '../src/components/EvidenceLogicBox';
 import { PrimaryButton } from '../src/components/PrimaryButton';
+import { ReadinessSnapshot } from '../src/components/ReadinessSnapshot';
 import { Screen } from '../src/components/Screen';
 import { SectionHeader } from '../src/components/SectionHeader';
-import { mockGapMap } from '../src/data/mockGapMap';
+import { mockGapMap, mockReadinessSnapshot } from '../src/data/mockGapMap';
 import { mockTargetJob } from '../src/data/mockTargetJob';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
@@ -30,6 +32,14 @@ export default function GapMapScreen() {
         subtitle={`Target: ${mockTargetJob.role}`}
       />
 
+      <ReadinessSnapshot snapshot={mockReadinessSnapshot} />
+
+      <View style={styles.claimBox}>
+        <Text style={styles.claimText}>
+          Your CV may claim a skill. This map asks: what proof supports it?
+        </Text>
+      </View>
+
       {groupOrder.map(({ level, label }) => {
         const items = mockGapMap.filter((c) => c.status === level);
         if (items.length === 0) return null;
@@ -42,6 +52,8 @@ export default function GapMapScreen() {
           </View>
         );
       })}
+
+      <EvidenceLogicBox />
 
       <View style={styles.noteBox}>
         <Text style={styles.note}>Claims are not the same as evidence.</Text>
@@ -56,6 +68,17 @@ export default function GapMapScreen() {
 }
 
 const styles = StyleSheet.create({
+  claimBox: {
+    backgroundColor: colors.sampleBg,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  claimText: {
+    ...typography.subtitle,
+    color: colors.indigoDark,
+    textAlign: 'center',
+  },
   group: {
     marginBottom: spacing.lg,
   },

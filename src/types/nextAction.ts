@@ -1,7 +1,7 @@
 export interface NextAction {
-  headline: string;
-  project: string;
-  demonstrate: string[];
-  uploadAs: string[];
-  strengthens: string[];
+  projectName: string;
+  targets: string[];
+  steps: string[];
+  whyThisHelps: string[];
+  uploadLater: string[];
 }

@@ -5,7 +5,6 @@ import { AppHeader } from '../src/components/AppHeader';
 import { PrimaryButton } from '../src/components/PrimaryButton';
 import { Screen } from '../src/components/Screen';
 import { SectionHeader } from '../src/components/SectionHeader';
-import { StatusBadge } from '../src/components/StatusBadge';
 import { mockNextAction } from '../src/data/mockNextAction';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
@@ -16,24 +15,44 @@ export default function NextActionScreen() {
   return (
     <Screen>
       <AppHeader showBack step="Step 4 of 4" />
-      <SectionHeader title="Your best next move" />
+      <SectionHeader
+        title="Build this next"
+        subtitle="One small project can strengthen your weakest evidence gaps."
+      />
 
-      <View style={styles.card}>
-        <Text style={styles.headline}>{mockNextAction.headline}</Text>
+      <View style={styles.projectCard}>
+        <Text style={styles.projectLabel}>RECOMMENDED PROJECT</Text>
+        <Text style={styles.projectName}>{mockNextAction.projectName}</Text>
+        <View style={styles.chipRow}>
+          {mockNextAction.targets.map((skill) => (
+            <View key={skill} style={styles.targetChip}>
+              <Text style={styles.targetChipText}>{skill}</Text>
+            </View>
+          ))}
+        </View>
       </View>
 
-      <Text style={styles.blockLabel}>PROJECT</Text>
-      <Text style={styles.body}>{mockNextAction.project}</Text>
-
-      <Text style={styles.blockLabel}>DEMONSTRATE</Text>
-      {mockNextAction.demonstrate.map((item) => (
-        <Text key={item} style={styles.listItem}>
-          • {item}
-        </Text>
+      <Text style={styles.blockLabel}>THE RECIPE</Text>
+      {mockNextAction.steps.map((step, index) => (
+        <View key={step} style={styles.stepRow}>
+          <View style={styles.stepNumber}>
+            <Text style={styles.stepNumberText}>{index + 1}</Text>
+          </View>
+          <Text style={styles.stepText}>{step}</Text>
+        </View>
       ))}
 
-      <Text style={styles.blockLabel}>UPLOAD AS EVIDENCE</Text>
-      {mockNextAction.uploadAs.map((item) => (
+      <View style={styles.whyCard}>
+        <Text style={styles.whyLabel}>Why this helps</Text>
+        {mockNextAction.whyThisHelps.map((reason) => (
+          <Text key={reason} style={styles.whyItem}>
+            • {reason}
+          </Text>
+        ))}
+      </View>
+
+      <Text style={styles.blockLabel}>WHAT TO UPLOAD LATER</Text>
+      {mockNextAction.uploadLater.map((item) => (
         <Text key={item} style={styles.listItem}>
           • {item}
         </Text>
@@ -44,20 +63,13 @@ export default function NextActionScreen() {
         reassessed.
       </Text>
 
-      <View style={styles.strengthensCard}>
-        <Text style={styles.strengthensLabel}>This action strengthens:</Text>
-        <View style={styles.chipRow}>
-          {mockNextAction.strengthens.map((skill) => (
-            <View key={skill} style={styles.chip}>
-              <Text style={styles.chipText}>{skill}</Text>
-            </View>
-          ))}
-        </View>
-      </View>
-
       {added ? (
-        <View style={styles.successRow}>
-          <StatusBadge label="Added to your demo action plan" tone="success" />
+        <View style={styles.successCard}>
+          <Text style={styles.successTitle}>Added to demo action plan</Text>
+          <Text style={styles.successBody}>
+            Next build step: we will later connect this to a real user
+            account and database.
+          </Text>
         </View>
       ) : (
         <PrimaryButton
@@ -70,7 +82,7 @@ export default function NextActionScreen() {
 }
 
 const styles = StyleSheet.create({
-  card: {
+  projectCard: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     borderWidth: 1,
@@ -78,18 +90,78 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.lg,
   },
-  headline: {
+  projectLabel: {
+    ...typography.small,
+    color: colors.textMuted,
+    letterSpacing: 0.6,
+    marginBottom: spacing.xs,
+  },
+  projectName: {
     ...typography.subtitle,
     color: colors.indigoDark,
+    marginBottom: spacing.sm,
+  },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
+  },
+  targetChip: {
+    backgroundColor: colors.sampleBg,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+  },
+  targetChipText: {
+    ...typography.caption,
+    color: colors.sampleText,
+    fontWeight: '600',
   },
   blockLabel: {
     ...typography.small,
     color: colors.textMuted,
     letterSpacing: 0.6,
     marginTop: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  stepRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  stepNumber: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: colors.indigo,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 1,
+  },
+  stepNumberText: {
+    ...typography.small,
+    color: colors.white,
+  },
+  stepText: {
+    ...typography.body,
+    color: colors.textPrimary,
+    flex: 1,
+  },
+  whyCard: {
+    backgroundColor: colors.strongBg,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginTop: spacing.md,
+    marginBottom: spacing.md,
+    gap: spacing.xs,
+  },
+  whyLabel: {
+    ...typography.subtitle,
+    color: colors.textPrimary,
     marginBottom: spacing.xs,
   },
-  body: {
+  whyItem: {
     ...typography.body,
     color: colors.textPrimary,
   },
@@ -104,35 +176,20 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     marginBottom: spacing.lg,
   },
-  strengthensCard: {
-    backgroundColor: colors.strongBg,
+  successCard: {
+    backgroundColor: colors.successBg,
     borderRadius: radius.md,
     padding: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  strengthensLabel: {
-    ...typography.caption,
-    color: colors.textPrimary,
-    marginBottom: spacing.sm,
-  },
-  chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
     gap: spacing.xs,
   },
-  chip: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.pill,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
+  successTitle: {
+    ...typography.subtitle,
+    color: colors.success,
   },
-  chipText: {
+  successBody: {
     ...typography.caption,
-    color: colors.strong,
-    fontWeight: '600',
-  },
-  successRow: {
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
 });

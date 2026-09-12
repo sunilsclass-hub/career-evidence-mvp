@@ -3,7 +3,11 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../theme/colors';
 import { radius, spacing, typography } from '../theme/spacing';
-import type { CompetencyAssessment, CompetencyStatusLevel } from '../types/competency';
+import type {
+  CompetencyAssessment,
+  CompetencyStatusLevel,
+  EvidenceKind,
+} from '../types/competency';
 
 interface CompetencyStatusProps {
   competency: CompetencyAssessment;
@@ -21,6 +25,14 @@ const statusTone: Record<CompetencyStatusLevel, { bg: string; text: string }> = 
   moderate: { bg: colors.moderateBg, text: colors.moderate },
   weak: { bg: colors.weakBg, text: colors.weak },
   missing: { bg: colors.missingBg, text: colors.missing },
+};
+
+const evidenceKindLabel: Record<EvidenceKind, string> = {
+  project: 'Project-based',
+  certificate: 'Certificate-based',
+  presentation: 'Presentation-based',
+  coursework: 'Coursework-based',
+  none: 'No evidence yet',
 };
 
 export function CompetencyStatus({ competency }: CompetencyStatusProps) {
@@ -43,6 +55,10 @@ export function CompetencyStatus({ competency }: CompetencyStatusProps) {
           </Text>
         </View>
       </View>
+      <Text style={styles.evidenceKind}>
+        {evidenceKindLabel[competency.evidenceKind]}
+        {competency.supportingEvidence ? ` · ${competency.supportingEvidence}` : ''}
+      </Text>
       {expanded ? <Text style={styles.reason}>{competency.reason}</Text> : null}
     </Pressable>
   );
@@ -80,6 +96,12 @@ const styles = StyleSheet.create({
   },
   pillText: {
     ...typography.small,
+  },
+  evidenceKind: {
+    ...typography.caption,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+    marginLeft: spacing.md + 8,
   },
   reason: {
     ...typography.caption,
