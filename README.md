@@ -84,6 +84,34 @@ npx expo export --platform android   # Verify the native JS bundle builds
 All state is in-memory only (React Context, no `AsyncStorage`). A page
 reload returns to the original sample data.
 
+## Deploying a shareable web preview (EAS Hosting)
+
+The simplest Expo-supported way to share this prototype with pilot
+students over a link is **EAS Hosting**, which serves the static web
+export (`npx expo export --platform web`) from a URL — no app store
+build, no APK, no backend required.
+
+```bash
+# one-time, interactive — run this locally, not in CI
+npx eas-cli login
+
+# links this repo to an Expo project (also one-time)
+npx eas-cli init
+
+# builds the static web bundle and deploys it
+npx expo export --platform web
+npx eas-cli deploy
+```
+
+`eas deploy` prints the preview URL when it finishes (add `--prod` for
+a stable production alias instead of a preview alias). Share that URL
+directly with students — it works in any browser, no install needed.
+
+This requires an Expo account (free) and cannot be completed
+non-interactively without one, so it must be run from a machine where
+you can log in (or with an `EXPO_TOKEN` for CI — see
+https://docs.expo.dev/accounts/programmatic-access/).
+
 ## What is intentionally not built yet
 
 - Supabase, any database, or persistence beyond a single session
