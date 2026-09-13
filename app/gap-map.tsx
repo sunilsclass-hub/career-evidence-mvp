@@ -9,7 +9,7 @@ import { PrimaryButton } from '../src/components/PrimaryButton';
 import { ReadinessSnapshot } from '../src/components/ReadinessSnapshot';
 import { Screen } from '../src/components/Screen';
 import { SectionHeader } from '../src/components/SectionHeader';
-import { demoTargetSkills } from '../src/data/mockGapMap';
+import { findRoleById } from '../src/data/roleLibrary';
 import { useEvidence } from '../src/state/EvidenceContext';
 import { useTargetJob } from '../src/state/TargetJobContext';
 import { colors } from '../src/theme/colors';
@@ -19,20 +19,44 @@ import { buildDemoGapMap, buildReadinessSnapshot } from '../src/utils/buildDemoG
 
 const groupOrder: CompetencyStatusLevel[] = ['strong', 'moderate', 'weak', 'missing'];
 
-const DEMO_ROLE = 'Data Analyst';
-
 export default function GapMapScreen() {
   const router = useRouter();
   const { evidence } = useEvidence();
   const { targetJob } = useTargetJob();
 
-  const { gapMap, improvements } = useMemo(
-    () => buildDemoGapMap(demoTargetSkills, evidence),
-    [evidence],
-  );
+  const selectedRole = useMemo(() => findRoleById(targetJob.roleId), [targetJob.roleId]);
+
+  const { gapMap, improvements } = useMemo(() => {
+    if (!selectedRole) return { gapMap: [], improvements: [] };
+    return buildDemoGapMap(selectedRole.competencies, evidence);
+  }, [selectedRole, evidence]);
+
   const readinessSnapshot = useMemo(() => buildReadinessSnapshot(gapMap), [gapMap]);
 
-  const roleMatchesDemo = targetJob.role.trim().toLowerCase() === DEMO_ROLE.toLowerCase();
+  if (!selectedRole) {
+    return (
+      <Screen>
+        <AppHeader showBack step="Step 3 of 4" />
+        <SectionHeader
+          title="Your evidence vs. your target role"
+          subtitle={`Target: ${targetJob.role || 'Not set'}`}
+        />
+
+        <View style={styles.roleNotice}>
+          <Text style={styles.roleNoticeText}>
+            This role isn&apos;t in the library yet, so there&apos;s nothing
+            to score against. Tell us the role in the feedback form and
+            we&apos;ll add it.
+          </Text>
+        </View>
+
+        <PrimaryButton
+          label="Show Me What To Do Next"
+          onPress={() => router.push('/next-action')}
+        />
+      </Screen>
+    );
+  }
 
   return (
     <Screen>
@@ -41,14 +65,6 @@ export default function GapMapScreen() {
         title="Your evidence vs. your target role"
         subtitle={`Target: ${targetJob.role}`}
       />
-
-      {!roleMatchesDemo ? (
-        <View style={styles.roleNotice}>
-          <Text style={styles.roleNoticeText}>
-            This demo currently analyses Data Analyst skills only.
-          </Text>
-        </View>
-      ) : null}
 
       <ReadinessSnapshot snapshot={readinessSnapshot} />
 

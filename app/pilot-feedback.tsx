@@ -6,7 +6,6 @@ import { ChoiceQuestion } from '../src/components/ChoiceQuestion';
 import { PrimaryButton } from '../src/components/PrimaryButton';
 import { Screen } from '../src/components/Screen';
 import { SectionHeader } from '../src/components/SectionHeader';
-import { StatusBadge } from '../src/components/StatusBadge';
 import { TextButton } from '../src/components/TextButton';
 import { useEvidence } from '../src/state/EvidenceContext';
 import { colors } from '../src/theme/colors';
@@ -85,7 +84,7 @@ export default function PilotFeedbackScreen() {
             In the real pilot, this would be securely saved with consent.
           </Text>
           <View style={styles.resetRow}>
-            <TextButton label="Reset demo" onPress={resetDemoEvidence} />
+            <TextButton label="Reset everything" onPress={resetDemoEvidence} />
           </View>
         </View>
       </Screen>
@@ -101,10 +100,6 @@ export default function PilotFeedbackScreen() {
         students preparing for placements, internships or early-career
         roles.
       </Text>
-
-      <View style={styles.localBadgeRow}>
-        <StatusBadge label="Local demo only" tone="local" />
-      </View>
 
       <ChoiceQuestion
         question="Did the Evidence Gap Map help you understand what you can actually prove?"
@@ -204,9 +199,6 @@ const styles = StyleSheet.create({
     ...typography.body,
     color: colors.textSecondary,
     marginBottom: spacing.md,
-  },
-  localBadgeRow: {
-    marginBottom: spacing.lg,
   },
   field: {
     marginBottom: spacing.lg,

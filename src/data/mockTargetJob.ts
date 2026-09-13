@@ -1,14 +1,16 @@
+import { HEALTH_DATA_ANALYST_ROLE_ID } from './roleLibrary';
 import type { TargetJob } from '../types/targetJob';
 
 export const mockTargetJob: TargetJob = {
-  role: 'Data Analyst',
+  roleId: HEALTH_DATA_ANALYST_ROLE_ID,
+  role: 'Health Data Analyst',
   company: 'Example Consulting Company',
   jobDescription:
-    'We are looking for a Data Analyst to help our consulting teams turn ' +
-    'raw client data into clear, actionable insight. You will clean and ' +
-    'query data using SQL, build analysis scripts in Python, and design ' +
-    'dashboards in Power BI. A solid grasp of statistics is expected, ' +
+    'We are looking for a Health Data Analyst to help our team turn ' +
+    'raw health data into clear, actionable insight. You will clean and ' +
+    'query data using SQL, build analysis scripts in Python or R, and design ' +
+    'dashboards to visualise findings. A solid grasp of statistics is expected, ' +
     'along with the ability to explain findings to non-technical ' +
-    'stakeholders and work well within a small project team.',
+    'stakeholders while respecting patient data privacy.',
   isSample: true,
 };

@@ -16,9 +16,7 @@ export function EvidenceCard({ evidence }: EvidenceCardProps) {
         <Text style={styles.type}>{evidence.type.toUpperCase()}</Text>
         {evidence.origin === 'sample' ? (
           <StatusBadge label="Sample" tone="sample" />
-        ) : (
-          <StatusBadge label="Local demo only" tone="local" />
-        )}
+        ) : null}
       </View>
       <Text style={styles.title}>{evidence.title}</Text>
       {evidence.description ? (

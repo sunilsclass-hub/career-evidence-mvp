@@ -29,6 +29,7 @@ export default function AddEvidenceScreen() {
   const [description, setDescription] = useState('');
   const [skillsInput, setSkillsInput] = useState('');
   const [strengthNote, setStrengthNote] = useState('');
+  const [hasOutput, setHasOutput] = useState(false);
 
   const canSave = useMemo(() => title.trim().length > 0 && type !== null, [title, type]);
 
@@ -45,6 +46,7 @@ export default function AddEvidenceScreen() {
       description: description.trim(),
       skills,
       strengthNote: strengthNote.trim(),
+      hasOutput,
     });
 
     router.back();
@@ -134,6 +136,30 @@ export default function AddEvidenceScreen() {
         />
       </View>
 
+      <Pressable
+        onPress={() => setHasOutput((prev) => !prev)}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: hasOutput }}
+        accessibilityLabel="Is there something you could actually show someone?"
+        style={styles.checkboxField}
+      >
+        <View style={[styles.checkbox, hasOutput && styles.checkboxChecked]}>
+          {hasOutput ? <Text style={styles.checkboxMark}>✓</Text> : null}
+        </View>
+        <View style={styles.checkboxTextGroup}>
+          <Text style={styles.checkboxLabel}>
+            Is there something you could actually show someone?
+          </Text>
+          <Text style={styles.checkboxSubLabel}>
+            Code, a report, a dashboard, slides, a link, a document.
+          </Text>
+        </View>
+      </Pressable>
+      <Text style={styles.hint}>
+        Evidence you can show is rated more strongly than evidence you can
+        only describe.
+      </Text>
+
       <View style={styles.warningBox}>
         <Text style={styles.warningText}>
           Unsupported claims will remain unverified.
@@ -141,7 +167,7 @@ export default function AddEvidenceScreen() {
       </View>
 
       <PrimaryButton
-        label="Save Demo Evidence"
+        label="Save Evidence"
         onPress={handleSave}
         disabled={!canSave}
       />
@@ -206,6 +232,45 @@ const styles = StyleSheet.create({
   typeChipTextSelected: {
     color: colors.white,
     fontWeight: '600',
+  },
+  checkboxField: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  checkboxChecked: {
+    backgroundColor: colors.indigo,
+    borderColor: colors.indigo,
+  },
+  checkboxMark: {
+    color: colors.white,
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  checkboxTextGroup: {
+    flex: 1,
+  },
+  checkboxLabel: {
+    ...typography.body,
+    color: colors.textPrimary,
+    fontWeight: '600',
+  },
+  checkboxSubLabel: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    marginTop: 2,
   },
   warningBox: {
     backgroundColor: colors.weakBg,

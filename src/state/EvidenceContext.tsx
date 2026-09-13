@@ -8,6 +8,7 @@ import {
 } from 'react';
 
 import { mockEvidence } from '../data/mockEvidence';
+import { HEALTH_DATA_ANALYST_ROLE_ID } from '../data/roleLibrary';
 import type { EvidenceItem, EvidenceType } from '../types/evidence';
 
 export interface NewEvidenceInput {
@@ -17,6 +18,8 @@ export interface NewEvidenceInput {
   /** Comma-separated skills, already split and trimmed by the caller. */
   skills: string[];
   strengthNote: string;
+  /** Self-declared: is there a shareable output/artefact behind this? */
+  hasOutput: boolean;
 }
 
 interface EvidenceContextValue {
@@ -28,8 +31,15 @@ interface EvidenceContextValue {
   justAddedTitle: string | null;
   addEvidence: (input: NewEvidenceInput) => void;
   clearJustAdded: () => void;
-  /** Discards all local evidence and restores the original sample set, for demo resets. */
+  /** Discards all local evidence and restores the original sample set. */
   resetDemoEvidence: () => void;
+  /**
+   * The sample evidence is Health Data Analyst shaped. When the student
+   * targets any other role, it stops being relevant, so it's cleared —
+   * local (user-added) evidence is never touched by this. Selecting
+   * Health Data Analyst again restores it if it isn't already present.
+   */
+  syncSampleEvidenceForRole: (roleId: string) => void;
 }
 
 const EvidenceContext = createContext<EvidenceContextValue | undefined>(undefined);
@@ -48,6 +58,7 @@ export function EvidenceProvider({ children }: PropsWithChildren) {
       type: input.type,
       description: input.description || undefined,
       demonstrates: input.skills,
+      hasOutput: input.hasOutput,
       strengthNote: input.strengthNote || undefined,
       origin: 'local',
     };
@@ -62,6 +73,19 @@ export function EvidenceProvider({ children }: PropsWithChildren) {
     setJustAddedTitle(null);
   }, []);
 
+  const syncSampleEvidenceForRole = useCallback((roleId: string) => {
+    setEvidence((prev) => {
+      const localOnly = prev.filter((item) => item.origin === 'local');
+      if (roleId === HEALTH_DATA_ANALYST_ROLE_ID) {
+        const alreadyHasSample = prev.some((item) => item.origin === 'sample');
+        return alreadyHasSample
+          ? prev
+          : [...mockEvidence.map((item) => ({ ...item })), ...localOnly];
+      }
+      return localOnly;
+    });
+  }, []);
+
   const value = useMemo<EvidenceContextValue>(
     () => ({
       evidence,
@@ -71,8 +95,16 @@ export function EvidenceProvider({ children }: PropsWithChildren) {
       addEvidence,
       clearJustAdded,
       resetDemoEvidence,
+      syncSampleEvidenceForRole,
     }),
-    [evidence, justAddedTitle, addEvidence, clearJustAdded, resetDemoEvidence],
+    [
+      evidence,
+      justAddedTitle,
+      addEvidence,
+      clearJustAdded,
+      resetDemoEvidence,
+      syncSampleEvidenceForRole,
+    ],
   );
 
   return <EvidenceContext.Provider value={value}>{children}</EvidenceContext.Provider>;

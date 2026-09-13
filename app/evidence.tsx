@@ -28,6 +28,8 @@ export default function EvidenceVaultScreen() {
     return () => clearJustAdded();
   }, [clearJustAdded]);
 
+  const isEmpty = evidence.length === 0;
+
   return (
     <Screen>
       <AppHeader showBack step="Step 2 of 4" />
@@ -37,10 +39,12 @@ export default function EvidenceVaultScreen() {
         presentations, code, certificates or internship outputs.
       </Text>
 
-      <Text style={styles.count}>
-        {evidence.length} evidence {evidence.length === 1 ? 'item' : 'items'}{' '}
-        ({localEvidence.length} yours, {sampleEvidence.length} sample)
-      </Text>
+      {!isEmpty ? (
+        <Text style={styles.count}>
+          {evidence.length} evidence {evidence.length === 1 ? 'item' : 'items'}{' '}
+          ({localEvidence.length} yours, {sampleEvidence.length} sample)
+        </Text>
+      ) : null}
 
       {justAddedTitle ? (
         <View style={styles.successBox}>
@@ -50,21 +54,34 @@ export default function EvidenceVaultScreen() {
         </View>
       ) : null}
 
-      {localEvidence.length > 0 ? (
-        <View style={styles.group}>
-          <Text style={styles.groupLabel}>YOUR SAVED EVIDENCE</Text>
-          {localEvidence.map((item) => (
-            <EvidenceCard key={item.id} evidence={item} />
-          ))}
+      {isEmpty ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyStateText}>
+            No evidence yet. Add the first thing you&apos;ve actually done
+            for this role.
+          </Text>
         </View>
-      ) : null}
+      ) : (
+        <>
+          {localEvidence.length > 0 ? (
+            <View style={styles.group}>
+              <Text style={styles.groupLabel}>YOUR SAVED EVIDENCE</Text>
+              {localEvidence.map((item) => (
+                <EvidenceCard key={item.id} evidence={item} />
+              ))}
+            </View>
+          ) : null}
 
-      <View style={styles.group}>
-        <Text style={styles.groupLabel}>SAMPLE EVIDENCE</Text>
-        {sampleEvidence.map((item) => (
-          <EvidenceCard key={item.id} evidence={item} />
-        ))}
-      </View>
+          {sampleEvidence.length > 0 ? (
+            <View style={styles.group}>
+              <Text style={styles.groupLabel}>SAMPLE EVIDENCE</Text>
+              {sampleEvidence.map((item) => (
+                <EvidenceCard key={item.id} evidence={item} />
+              ))}
+            </View>
+          ) : null}
+        </>
+      )}
 
       <View style={styles.addEvidence}>
         <SecondaryButton
@@ -75,7 +92,7 @@ export default function EvidenceVaultScreen() {
 
       {localEvidence.length > 0 ? (
         <View style={styles.resetRow}>
-          <TextButton label="Reset demo" onPress={resetDemoEvidence} />
+          <TextButton label="Reset everything" onPress={resetDemoEvidence} />
         </View>
       ) : null}
 
@@ -116,6 +133,19 @@ const styles = StyleSheet.create({
     color: colors.success,
     textAlign: 'center',
     fontWeight: '600',
+  },
+  emptyState: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  emptyStateText: {
+    ...typography.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
   group: {
     marginBottom: spacing.md,
