@@ -19,11 +19,11 @@ export function EvidenceLogicBox() {
       <Pressable
         onPress={() => setExpanded((prev) => !prev)}
         accessibilityRole="button"
-        accessibilityLabel="How this demo thinks about evidence"
+        accessibilityLabel="How evidence is rated"
         style={styles.headerRow}
         hitSlop={8}
       >
-        <Text style={styles.title}>How this demo thinks about evidence</Text>
+        <Text style={styles.title}>How evidence is rated</Text>
         <Text style={styles.toggle}>{expanded ? '−' : '+'}</Text>
       </Pressable>
 

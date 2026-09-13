@@ -13,46 +13,34 @@ export function AppHeader({ showBack = false, step }: AppHeaderProps) {
   const router = useRouter();
 
   return (
-    <View style={styles.wrapper}>
-      <View style={styles.container}>
-        <View style={styles.left}>
-          {showBack && router.canGoBack() ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Go back"
-              onPress={() => router.back()}
-              hitSlop={12}
-              style={styles.backButton}
-            >
-              <Text style={styles.backText}>‹ Back</Text>
-            </Pressable>
-          ) : (
-            <Text style={styles.brand}>Career Evidence</Text>
-          )}
-        </View>
-        {step ? <Text style={styles.step}>{step}</Text> : null}
+    <View style={styles.container}>
+      <View style={styles.left}>
+        {showBack && router.canGoBack() ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+            onPress={() => router.back()}
+            hitSlop={12}
+            style={styles.backButton}
+          >
+            <Text style={styles.backText}>‹ Back</Text>
+          </Pressable>
+        ) : (
+          <Text style={styles.brand}>Career Evidence</Text>
+        )}
       </View>
-      <Text style={styles.demoNotice}>
-        Demo mode: sample data and local-only changes.
-      </Text>
+      {step ? <Text style={styles.step}>{step}</Text> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
-  },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  demoNotice: {
-    ...typography.caption,
-    color: colors.textMuted,
-    marginTop: spacing.xs,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
   },
   left: {
     flexDirection: 'row',

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AppHeader } from '../src/components/AppHeader';
+import { ChoiceQuestion } from '../src/components/ChoiceQuestion';
 import { PrimaryButton } from '../src/components/PrimaryButton';
 import { Screen } from '../src/components/Screen';
 import { SecondaryButton } from '../src/components/SecondaryButton';
@@ -10,10 +11,25 @@ import { SectionHeader } from '../src/components/SectionHeader';
 import { mockNextAction } from '../src/data/mockNextAction';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
+import type { ActionCommitment } from '../src/types/nextAction';
+
+const commitmentOptions: readonly ActionCommitment[] = [
+  'This week',
+  'In 2 weeks',
+  'This month',
+];
+
+const commitmentPhrase: Record<ActionCommitment, string> = {
+  'This week': 'this week',
+  'In 2 weeks': 'in 2 weeks',
+  'This month': 'this month',
+};
 
 export default function NextActionScreen() {
   const router = useRouter();
   const [added, setAdded] = useState(false);
+  const [commitment, setCommitment] = useState<ActionCommitment | null>(null);
+  const [finished, setFinished] = useState(false);
 
   return (
     <Screen>
@@ -69,12 +85,35 @@ export default function NextActionScreen() {
       {added ? (
         <View style={styles.successWrapper}>
           <View style={styles.successCard}>
-            <Text style={styles.successTitle}>Added to demo action plan</Text>
-            <Text style={styles.successBody}>
-              Next build step: we will later connect this to a real user
-              account and database.
-            </Text>
+            <Text style={styles.successTitle}>Added to your action plan</Text>
           </View>
+
+          {commitment === null ? (
+            <ChoiceQuestion
+              question="When will you finish this?"
+              options={commitmentOptions}
+              selected={commitment}
+              onSelect={setCommitment}
+            />
+          ) : (
+            <View style={styles.commitmentCard}>
+              <Text style={styles.commitmentText}>
+                You committed to finish {mockNextAction.projectName}{' '}
+                {commitmentPhrase[commitment]}.
+              </Text>
+              {finished ? (
+                <Text style={styles.finishedText}>
+                  Nice work. Your evidence map can now be reassessed.
+                </Text>
+              ) : (
+                <SecondaryButton
+                  label="I've finished this"
+                  onPress={() => setFinished(true)}
+                />
+              )}
+            </View>
+          )}
+
           <SecondaryButton
             label="Give Pilot Feedback"
             onPress={() => router.push('/pilot-feedback')}
@@ -193,15 +232,26 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     padding: spacing.md,
     alignItems: 'center',
-    gap: spacing.xs,
   },
   successTitle: {
     ...typography.subtitle,
     color: colors.success,
   },
-  successBody: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    textAlign: 'center',
+  commitmentCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.md,
+    gap: spacing.sm,
+  },
+  commitmentText: {
+    ...typography.body,
+    color: colors.textPrimary,
+  },
+  finishedText: {
+    ...typography.body,
+    color: colors.success,
+    fontWeight: '600',
   },
 });

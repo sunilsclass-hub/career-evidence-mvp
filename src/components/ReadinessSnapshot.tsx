@@ -2,8 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../theme/colors';
 import { radius, spacing, typography } from '../theme/spacing';
-import type { EvidenceReadinessSnapshot } from '../types/competency';
-import { StatusBadge } from './StatusBadge';
+import { competencyStatusLabel, type EvidenceReadinessSnapshot } from '../types/competency';
 
 interface ReadinessSnapshotProps {
   snapshot: EvidenceReadinessSnapshot;
@@ -11,18 +10,15 @@ interface ReadinessSnapshotProps {
 
 export function ReadinessSnapshot({ snapshot }: ReadinessSnapshotProps) {
   const stats: { label: string; value: number; color: string }[] = [
-    { label: 'Strongly evidenced', value: snapshot.strongCount, color: colors.strong },
-    { label: 'Partially evidenced', value: snapshot.moderateCount, color: colors.moderate },
-    { label: 'Weakly evidenced', value: snapshot.weakCount, color: colors.weak },
-    { label: 'Critical gaps', value: snapshot.criticalGapCount, color: colors.missing },
+    { label: competencyStatusLabel.strong, value: snapshot.strongCount, color: colors.strong },
+    { label: competencyStatusLabel.moderate, value: snapshot.moderateCount, color: colors.moderate },
+    { label: competencyStatusLabel.weak, value: snapshot.weakCount, color: colors.weak },
+    { label: competencyStatusLabel.missing, value: snapshot.criticalGapCount, color: colors.missing },
   ];
 
   return (
     <View style={styles.card}>
-      <View style={styles.headerRow}>
-        <Text style={styles.title}>Evidence Readiness Snapshot</Text>
-        <StatusBadge label="Demo analysis" tone="sample" />
-      </View>
+      <Text style={styles.title}>Evidence Readiness Snapshot</Text>
 
       <View style={styles.statsRow}>
         {stats.map((stat) => (
@@ -34,8 +30,7 @@ export function ReadinessSnapshot({ snapshot }: ReadinessSnapshotProps) {
       </View>
 
       <Text style={styles.disclaimer}>
-        This is a demo analysis of sample data, not a validated or scientific
-        score.
+        This assessment uses transparent rules, not a validated score.
       </Text>
     </View>
   );
@@ -50,17 +45,10 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.lg,
   },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.md,
-    gap: spacing.sm,
-  },
   title: {
     ...typography.subtitle,
     color: colors.textPrimary,
-    flexShrink: 1,
+    marginBottom: spacing.md,
   },
   statsRow: {
     flexDirection: 'row',

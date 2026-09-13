@@ -9,27 +9,17 @@ import { PrimaryButton } from '../src/components/PrimaryButton';
 import { ReadinessSnapshot } from '../src/components/ReadinessSnapshot';
 import { Screen } from '../src/components/Screen';
 import { SectionHeader } from '../src/components/SectionHeader';
-import { mockGapMap } from '../src/data/mockGapMap';
+import { demoTargetSkills } from '../src/data/mockGapMap';
 import { useEvidence } from '../src/state/EvidenceContext';
 import { useTargetJob } from '../src/state/TargetJobContext';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
-import type { CompetencyStatusLevel } from '../src/types/competency';
+import { competencyStatusLabel, type CompetencyStatusLevel } from '../src/types/competency';
 import { buildDemoGapMap, buildReadinessSnapshot } from '../src/utils/buildDemoGapMap';
 
-const groupOrder: { level: CompetencyStatusLevel; label: string }[] = [
-  { level: 'strong', label: 'Strong evidence' },
-  { level: 'moderate', label: 'Moderate evidence' },
-  { level: 'weak', label: 'Weak evidence' },
-  { level: 'missing', label: 'Missing evidence' },
-];
+const groupOrder: CompetencyStatusLevel[] = ['strong', 'moderate', 'weak', 'missing'];
 
-const statusLabel: Record<CompetencyStatusLevel, string> = {
-  strong: 'Strong',
-  moderate: 'Moderate',
-  weak: 'Weak',
-  missing: 'Missing',
-};
+const DEMO_ROLE = 'Data Analyst';
 
 export default function GapMapScreen() {
   const router = useRouter();
@@ -37,10 +27,12 @@ export default function GapMapScreen() {
   const { targetJob } = useTargetJob();
 
   const { gapMap, improvements } = useMemo(
-    () => buildDemoGapMap(mockGapMap, evidence),
+    () => buildDemoGapMap(demoTargetSkills, evidence),
     [evidence],
   );
   const readinessSnapshot = useMemo(() => buildReadinessSnapshot(gapMap), [gapMap]);
+
+  const roleMatchesDemo = targetJob.role.trim().toLowerCase() === DEMO_ROLE.toLowerCase();
 
   return (
     <Screen>
@@ -50,13 +42,13 @@ export default function GapMapScreen() {
         subtitle={`Target: ${targetJob.role}`}
       />
 
-      <View style={styles.demoNotice}>
-        <Text style={styles.demoNoticeTitle}>Rule-based demo update</Text>
-        <Text style={styles.demoNoticeBody}>
-          This map changes when you add local evidence. Real AI verification
-          will be added later.
-        </Text>
-      </View>
+      {!roleMatchesDemo ? (
+        <View style={styles.roleNotice}>
+          <Text style={styles.roleNoticeText}>
+            This demo currently analyses Data Analyst skills only.
+          </Text>
+        </View>
+      ) : null}
 
       <ReadinessSnapshot snapshot={readinessSnapshot} />
 
@@ -67,13 +59,14 @@ export default function GapMapScreen() {
           </Text>
           {improvements.map((improvement) => (
             <Text key={improvement.skill} style={styles.improvementItem}>
-              • {improvement.skill} moved from {statusLabel[improvement.from]}{' '}
-              to {statusLabel[improvement.to]}
+              • {improvement.skill} moved from{' '}
+              {competencyStatusLabel[improvement.from]} to{' '}
+              {competencyStatusLabel[improvement.to]}
             </Text>
           ))}
           <Text style={styles.improvementsFootnote}>
-            This is a rule-based demo update. Real AI evidence analysis will
-            be added later.
+            This assessment uses transparent rules. You can see exactly why
+            each skill is rated the way it is.
           </Text>
         </View>
       ) : null}
@@ -84,12 +77,14 @@ export default function GapMapScreen() {
         </Text>
       </View>
 
-      {groupOrder.map(({ level, label }) => {
+      {groupOrder.map((level) => {
         const items = gapMap.filter((c) => c.status === level);
         if (items.length === 0) return null;
         return (
           <View key={level} style={styles.group}>
-            <Text style={styles.groupLabel}>{label.toUpperCase()}</Text>
+            <Text style={styles.groupLabel}>
+              {competencyStatusLabel[level].toUpperCase()}
+            </Text>
             {items.map((competency) => (
               <CompetencyStatus key={competency.skill} competency={competency} />
             ))}
@@ -112,21 +107,16 @@ export default function GapMapScreen() {
 }
 
 const styles = StyleSheet.create({
-  demoNotice: {
+  roleNotice: {
     backgroundColor: colors.sampleBg,
     borderRadius: radius.md,
     padding: spacing.md,
     marginBottom: spacing.lg,
   },
-  demoNoticeTitle: {
+  roleNoticeText: {
     ...typography.caption,
     color: colors.sampleText,
-    fontWeight: '700',
-    marginBottom: 2,
-  },
-  demoNoticeBody: {
-    ...typography.caption,
-    color: colors.sampleText,
+    textAlign: 'center',
   },
   improvementsCard: {
     backgroundColor: colors.strongBg,

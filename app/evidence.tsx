@@ -81,8 +81,8 @@ export default function EvidenceVaultScreen() {
 
       <View style={styles.gapMapNote}>
         <Text style={styles.gapMapNoteText}>
-          This demo map will update using simple rules based on your local
-          evidence. Real AI review comes later.
+          This assessment uses transparent rules. You can see exactly why
+          each skill is rated the way it is.
         </Text>
       </View>
 

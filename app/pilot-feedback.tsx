@@ -45,6 +45,8 @@ export default function PilotFeedbackScreen() {
   const [targetRoleUseCase, setTargetRoleUseCase] = useState('');
   const [confusedOrMissing, setConfusedOrMissing] = useState('');
   const [wouldRecommend, setWouldRecommend] = useState<YesMaybeNo | null>(null);
+  const [willCompleteIn14Days, setWillCompleteIn14Days] = useState<YesMaybeNo | null>(null);
+  const [contactInfo, setContactInfo] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
   const canSubmit = useMemo(
@@ -53,8 +55,16 @@ export default function PilotFeedbackScreen() {
       nextActionUseful !== null &&
       wouldUploadRealEvidence !== null &&
       whoShouldPay !== null &&
-      wouldRecommend !== null,
-    [gapMapHelpful, nextActionUseful, wouldUploadRealEvidence, whoShouldPay, wouldRecommend],
+      wouldRecommend !== null &&
+      willCompleteIn14Days !== null,
+    [
+      gapMapHelpful,
+      nextActionUseful,
+      wouldUploadRealEvidence,
+      whoShouldPay,
+      wouldRecommend,
+      willCompleteIn14Days,
+    ],
   );
 
   const handleSubmit = () => {
@@ -156,6 +166,30 @@ export default function PilotFeedbackScreen() {
         onSelect={setWouldRecommend}
       />
 
+      <ChoiceQuestion
+        question="Will you complete this project in the next 14 days?"
+        options={yesMaybeNoOptions}
+        selected={willCompleteIn14Days}
+        onSelect={setWillCompleteIn14Days}
+      />
+
+      <View style={styles.field}>
+        <Text style={styles.label}>
+          Email or phone (optional — only if you&apos;re happy for us to
+          follow up)
+        </Text>
+        <TextInput
+          style={styles.input}
+          value={contactInfo}
+          onChangeText={setContactInfo}
+          placeholder="Optional"
+          placeholderTextColor={colors.textMuted}
+        />
+        <Text style={styles.hint}>
+          Optional. This form is not submitted anywhere in this demo.
+        </Text>
+      </View>
+
       <PrimaryButton
         label="Submit Demo Feedback"
         onPress={handleSubmit}
@@ -176,6 +210,11 @@ const styles = StyleSheet.create({
   },
   field: {
     marginBottom: spacing.lg,
+  },
+  hint: {
+    ...typography.caption,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
   },
   label: {
     ...typography.subtitle,

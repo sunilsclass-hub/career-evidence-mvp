@@ -3,22 +3,16 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../theme/colors';
 import { radius, spacing, typography } from '../theme/spacing';
-import type {
-  CompetencyAssessment,
-  CompetencyStatusLevel,
-  EvidenceKind,
+import {
+  competencyStatusLabel,
+  type CompetencyAssessment,
+  type CompetencyStatusLevel,
+  type EvidenceKind,
 } from '../types/competency';
 
 interface CompetencyStatusProps {
   competency: CompetencyAssessment;
 }
-
-const statusLabel: Record<CompetencyStatusLevel, string> = {
-  strong: 'Strong evidence',
-  moderate: 'Moderate evidence',
-  weak: 'Weak evidence',
-  missing: 'Missing evidence',
-};
 
 const statusTone: Record<CompetencyStatusLevel, { bg: string; text: string }> = {
   strong: { bg: colors.strongBg, text: colors.strong },
@@ -46,14 +40,14 @@ export function CompetencyStatus({ competency }: CompetencyStatusProps) {
       onPress={() => setExpanded((prev) => !prev)}
       style={styles.row}
       accessibilityRole="button"
-      accessibilityLabel={`${competency.skill}, ${statusLabel[competency.status]}`}
+      accessibilityLabel={`${competency.skill}, ${competencyStatusLabel[competency.status]}`}
     >
       <View style={styles.mainRow}>
         <View style={[styles.dot, { backgroundColor: tone.text }]} />
         <Text style={styles.skill}>{competency.skill}</Text>
         <View style={[styles.pill, { backgroundColor: tone.bg }]}>
           <Text style={[styles.pillText, { color: tone.text }]}>
-            {statusLabel[competency.status]}
+            {competencyStatusLabel[competency.status]}
           </Text>
         </View>
       </View>

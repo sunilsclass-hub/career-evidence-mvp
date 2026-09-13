@@ -6,6 +6,7 @@ export const mockEvidence: EvidenceItem[] = [
     title: 'Sales Dashboard Project',
     type: 'Project',
     demonstrates: ['Power BI', 'Data cleaning', 'Presentation'],
+    hasOutput: true,
     origin: 'sample',
   },
   {

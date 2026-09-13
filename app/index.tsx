@@ -4,7 +4,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import { AppHeader } from '../src/components/AppHeader';
 import { PrimaryButton } from '../src/components/PrimaryButton';
 import { Screen } from '../src/components/Screen';
-import { SecondaryButton } from '../src/components/SecondaryButton';
 import { colors } from '../src/theme/colors';
 import { spacing, typography } from '../src/theme/spacing';
 
@@ -23,8 +22,13 @@ export default function WelcomeScreen() {
       <AppHeader />
       <View style={styles.body}>
         <Text style={styles.headline}>
-          Your degree shows what you studied.{'\n'}Show what you can
-          actually do.
+          Your degree shows what you studied.{'\n'}
+          Show what you can actually do.
+        </Text>
+
+        <Text style={styles.credibility}>
+          Built by Dr. D Sunil Kumar, Professor &amp; Dean (Students&apos;
+          Welfare), JSS AHER
         </Text>
 
         <View style={styles.steps}>
@@ -40,17 +44,14 @@ export default function WelcomeScreen() {
       </View>
 
       <PrimaryButton
-        label="Start My Career Evidence"
+        label="See what I can prove"
         onPress={() => router.push('/target-job')}
       />
 
-      <View style={styles.facilitatorRow}>
-        <SecondaryButton
-          label="Open Pilot Guide"
-          onPress={() => router.push('/pilot-guide')}
-        />
-        <Text style={styles.facilitatorHint}>For facilitator</Text>
-      </View>
+      <Text style={styles.privacyNotice}>
+        Nothing you enter is saved or sent anywhere. This runs entirely on
+        your device.
+      </Text>
     </Screen>
   );
 }
@@ -59,15 +60,20 @@ const styles = StyleSheet.create({
   body: {
     flexGrow: 1,
     justifyContent: 'center',
-    gap: spacing.xl,
+    gap: spacing.lg,
     paddingVertical: spacing.xl,
   },
   headline: {
     ...typography.headline,
     color: colors.textPrimary,
   },
+  credibility: {
+    ...typography.caption,
+    color: colors.textMuted,
+  },
   steps: {
     gap: spacing.md,
+    marginTop: spacing.md,
   },
   stepRow: {
     flexDirection: 'row',
@@ -92,13 +98,10 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     flex: 1,
   },
-  facilitatorRow: {
-    marginTop: spacing.md,
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  facilitatorHint: {
-    ...typography.small,
+  privacyNotice: {
+    ...typography.caption,
     color: colors.textMuted,
+    textAlign: 'center',
+    marginTop: spacing.md,
   },
 });

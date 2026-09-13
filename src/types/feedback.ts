@@ -11,4 +11,7 @@ export interface PilotFeedback {
   targetRoleUseCase: string;
   confusedOrMissing: string;
   wouldRecommend: YesMaybeNo;
+  willCompleteIn14Days: YesMaybeNo;
+  /** Optional — only if the student is happy to be followed up with. Not submitted anywhere in this demo. */
+  contactInfo: string;
 }
