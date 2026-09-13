@@ -9,30 +9,59 @@ import { SectionHeader } from '../src/components/SectionHeader';
 import { StatusBadge } from '../src/components/StatusBadge';
 import { TextButton } from '../src/components/TextButton';
 import { mockTargetJob } from '../src/data/mockTargetJob';
-import { findRoleById, OTHER_ROLE_ID, roleLibrary } from '../src/data/roleLibrary';
+import {
+  facultyOrder,
+  findRoleById,
+  OTHER_ROLE_ID,
+  rolesByFaculty,
+} from '../src/data/roleLibrary';
 import { useEvidence } from '../src/state/EvidenceContext';
 import { useTargetJob } from '../src/state/TargetJobContext';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
+
+const NO_ROLE_YET = '';
 
 export default function TargetJobScreen() {
   const router = useRouter();
   const { targetJob, setTargetJob } = useTargetJob();
   const { syncSampleEvidenceForRole } = useEvidence();
 
-  const [roleId, setRoleId] = useState(targetJob.roleId);
+  const initialFaculty =
+    targetJob.roleId === OTHER_ROLE_ID
+      ? null
+      : (findRoleById(targetJob.roleId)?.faculty ?? null);
+
+  const [faculty, setFaculty] = useState<string | null>(initialFaculty);
+  const [roleId, setRoleId] = useState<string>(targetJob.roleId || NO_ROLE_YET);
   const [customRole, setCustomRole] = useState(
     targetJob.roleId === OTHER_ROLE_ID ? targetJob.role : '',
   );
   const [company, setCompany] = useState(targetJob.company ?? '');
   const [jobDescription, setJobDescription] = useState(targetJob.jobDescription);
 
-  const canAnalyse = useMemo(
-    () => roleId !== OTHER_ROLE_ID || customRole.trim().length > 0,
-    [roleId, customRole],
+  const rolesInFaculty = useMemo(
+    () => (faculty ? rolesByFaculty(faculty) : []),
+    [faculty],
   );
 
+  const canAnalyse = useMemo(() => {
+    if (roleId === OTHER_ROLE_ID) return customRole.trim().length > 0;
+    return roleId !== NO_ROLE_YET;
+  }, [roleId, customRole]);
+
+  const selectFaculty = (nextFaculty: string) => {
+    setFaculty(nextFaculty);
+    setRoleId(NO_ROLE_YET);
+  };
+
+  const selectOther = () => {
+    setFaculty(null);
+    setRoleId(OTHER_ROLE_ID);
+  };
+
   const handleResetSample = () => {
+    setFaculty(findRoleById(mockTargetJob.roleId)?.faculty ?? null);
     setRoleId(mockTargetJob.roleId);
     setCustomRole('');
     setCompany(mockTargetJob.company ?? '');
@@ -65,53 +94,75 @@ export default function TargetJobScreen() {
       </View>
 
       <View style={styles.field}>
-        <Text style={styles.label}>Target role</Text>
-        <View style={styles.roleGrid}>
-          {roleLibrary.map((role) => {
-            const selected = role.id === roleId;
+        <Text style={styles.label}>Faculty</Text>
+        <View style={styles.chipGrid}>
+          {facultyOrder.map((option) => {
+            const selected = faculty === option && roleId !== OTHER_ROLE_ID;
             return (
               <Pressable
-                key={role.id}
-                onPress={() => setRoleId(role.id)}
+                key={option}
+                onPress={() => selectFaculty(option)}
                 accessibilityRole="button"
-                accessibilityLabel={role.label}
-                style={[styles.roleChip, selected && styles.roleChipSelected]}
+                accessibilityLabel={option}
+                style={[styles.chip, selected && styles.chipSelected]}
               >
-                <Text
-                  style={[styles.roleChipText, selected && styles.roleChipTextSelected]}
-                >
-                  {role.label}
+                <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
+                  {option}
                 </Text>
               </Pressable>
             );
           })}
           <Pressable
-            onPress={() => setRoleId(OTHER_ROLE_ID)}
+            onPress={selectOther}
             accessibilityRole="button"
             accessibilityLabel="Other (type your own)"
-            style={[styles.roleChip, roleId === OTHER_ROLE_ID && styles.roleChipSelected]}
+            style={[styles.chip, roleId === OTHER_ROLE_ID && styles.chipSelected]}
           >
             <Text
-              style={[
-                styles.roleChipText,
-                roleId === OTHER_ROLE_ID && styles.roleChipTextSelected,
-              ]}
+              style={[styles.chipText, roleId === OTHER_ROLE_ID && styles.chipTextSelected]}
             >
               Other (type your own)
             </Text>
           </Pressable>
         </View>
+      </View>
 
-        {roleId === OTHER_ROLE_ID ? (
+      {faculty && roleId !== OTHER_ROLE_ID ? (
+        <View style={styles.field}>
+          <Text style={styles.label}>Role</Text>
+          <View style={styles.chipGrid}>
+            {rolesInFaculty.map((role) => {
+              const selected = role.id === roleId;
+              return (
+                <Pressable
+                  key={role.id}
+                  onPress={() => setRoleId(role.id)}
+                  accessibilityRole="button"
+                  accessibilityLabel={role.label}
+                  style={[styles.chip, selected && styles.chipSelected]}
+                >
+                  <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
+                    {role.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      ) : null}
+
+      {roleId === OTHER_ROLE_ID ? (
+        <View style={styles.field}>
+          <Text style={styles.label}>Your target role</Text>
           <TextInput
-            style={[styles.input, styles.customRoleInput]}
+            style={styles.input}
             value={customRole}
             onChangeText={setCustomRole}
             placeholder="Type the role you're aiming for"
             placeholderTextColor={colors.textMuted}
           />
-        ) : null}
-      </View>
+        </View>
+      ) : null}
 
       <View style={styles.field}>
         <Text style={styles.label}>Company (optional)</Text>
@@ -175,13 +226,12 @@ const styles = StyleSheet.create({
     minHeight: 120,
     textAlignVertical: 'top',
   },
-  roleGrid: {
+  chipGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
-    marginBottom: spacing.sm,
   },
-  roleChip: {
+  chip: {
     borderRadius: radius.pill,
     borderWidth: 1,
     borderColor: colors.border,
@@ -189,20 +239,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  roleChipSelected: {
+  chipSelected: {
     backgroundColor: colors.indigo,
     borderColor: colors.indigo,
   },
-  roleChipText: {
+  chipText: {
     ...typography.caption,
     color: colors.textPrimary,
   },
-  roleChipTextSelected: {
+  chipTextSelected: {
     color: colors.white,
     fontWeight: '600',
-  },
-  customRoleInput: {
-    marginTop: spacing.xs,
   },
   resetRow: {
     alignItems: 'center',

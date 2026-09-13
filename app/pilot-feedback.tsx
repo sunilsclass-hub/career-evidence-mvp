@@ -8,6 +8,7 @@ import { Screen } from '../src/components/Screen';
 import { SectionHeader } from '../src/components/SectionHeader';
 import { TextButton } from '../src/components/TextButton';
 import { useEvidence } from '../src/state/EvidenceContext';
+import { useTargetJob } from '../src/state/TargetJobContext';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
 import type {
@@ -33,6 +34,11 @@ const payerOptions: readonly FeedbackPayer[] = [
 
 export default function PilotFeedbackScreen() {
   const { resetDemoEvidence } = useEvidence();
+  const { resetAll } = useTargetJob();
+  const handleResetEverything = () => {
+    resetDemoEvidence();
+    resetAll();
+  };
   const [gapMapHelpful, setGapMapHelpful] = useState<GapMapHelpfulness | null>(null);
   const [nextActionUseful, setNextActionUseful] = useState<NextActionUsefulness | null>(
     null,
@@ -84,7 +90,7 @@ export default function PilotFeedbackScreen() {
             In the real pilot, this would be securely saved with consent.
           </Text>
           <View style={styles.resetRow}>
-            <TextButton label="Reset everything" onPress={resetDemoEvidence} />
+            <TextButton label="Reset everything" onPress={handleResetEverything} />
           </View>
         </View>
       </Screen>

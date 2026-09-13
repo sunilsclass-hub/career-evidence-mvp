@@ -6,7 +6,9 @@ import { AppHeader } from '../src/components/AppHeader';
 import { PrimaryButton } from '../src/components/PrimaryButton';
 import { Screen } from '../src/components/Screen';
 import { SectionHeader } from '../src/components/SectionHeader';
+import { findRoleById } from '../src/data/roleLibrary';
 import { useEvidence } from '../src/state/EvidenceContext';
+import { useTargetJob } from '../src/state/TargetJobContext';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
 import type { EvidenceType } from '../src/types/evidence';
@@ -23,28 +25,33 @@ const evidenceTypes: EvidenceType[] = [
 export default function AddEvidenceScreen() {
   const router = useRouter();
   const { addEvidence } = useEvidence();
+  const { targetJob } = useTargetJob();
+
+  const selectedRole = useMemo(() => findRoleById(targetJob.roleId), [targetJob.roleId]);
 
   const [title, setTitle] = useState('');
   const [type, setType] = useState<EvidenceType | null>(null);
   const [description, setDescription] = useState('');
-  const [skillsInput, setSkillsInput] = useState('');
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [strengthNote, setStrengthNote] = useState('');
   const [hasOutput, setHasOutput] = useState(false);
 
   const canSave = useMemo(() => title.trim().length > 0 && type !== null, [title, type]);
 
+  const toggleSkill = (skill: string) => {
+    setSelectedSkills((prev) =>
+      prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill],
+    );
+  };
+
   const handleSave = () => {
     if (!canSave || !type) return;
-    const skills = skillsInput
-      .split(',')
-      .map((skill) => skill.trim())
-      .filter((skill) => skill.length > 0);
 
     addEvidence({
       title: title.trim(),
       type,
       description: description.trim(),
-      skills,
+      skills: selectedSkills,
       strengthNote: strengthNote.trim(),
       hasOutput,
     });
@@ -109,19 +116,35 @@ export default function AddEvidenceScreen() {
       </View>
 
       <View style={styles.field}>
-        <Text style={styles.label}>Skills demonstrated</Text>
-        <TextInput
-          style={styles.input}
-          value={skillsInput}
-          onChangeText={setSkillsInput}
-          placeholder="e.g. Python, statistics, data cleaning"
-          placeholderTextColor={colors.textMuted}
-        />
-        <Text style={styles.hint}>Separate skills with commas.</Text>
-        <Text style={styles.hint}>
-          Try adding: Python, statistics, data cleaning, business
-          interpretation
-        </Text>
+        <Text style={styles.label}>Which competencies does this demonstrate?</Text>
+        {selectedRole ? (
+          <View style={styles.skillList}>
+            {selectedRole.competencies.map((competency) => {
+              const checked = selectedSkills.includes(competency);
+              return (
+                <Pressable
+                  key={competency}
+                  onPress={() => toggleSkill(competency)}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked }}
+                  accessibilityLabel={competency}
+                  style={styles.skillRow}
+                >
+                  <View style={[styles.checkbox, checked && styles.checkboxChecked]}>
+                    {checked ? <Text style={styles.checkboxMark}>✓</Text> : null}
+                  </View>
+                  <Text style={styles.skillText}>{competency}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        ) : (
+          <Text style={styles.hint}>
+            Your target role isn&apos;t in the library, so there&apos;s
+            nothing to tag this evidence against yet. You can still save it
+            for your own record.
+          </Text>
+        )}
       </View>
 
       <View style={styles.field}>
@@ -233,6 +256,25 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontWeight: '600',
   },
+  skillList: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.sm,
+    gap: spacing.xs,
+  },
+  skillRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  skillText: {
+    ...typography.body,
+    color: colors.textPrimary,
+    flex: 1,
+  },
   checkboxField: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -248,7 +290,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 2,
   },
   checkboxChecked: {
     backgroundColor: colors.indigo,

@@ -10,6 +10,7 @@ import { SecondaryButton } from '../src/components/SecondaryButton';
 import { SectionHeader } from '../src/components/SectionHeader';
 import { TextButton } from '../src/components/TextButton';
 import { useEvidence } from '../src/state/EvidenceContext';
+import { useTargetJob } from '../src/state/TargetJobContext';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
 
@@ -23,6 +24,14 @@ export default function EvidenceVaultScreen() {
     clearJustAdded,
     resetDemoEvidence,
   } = useEvidence();
+  const { targetJob, resetAll } = useTargetJob();
+
+  const handleResetEverything = () => {
+    resetDemoEvidence();
+    resetAll();
+  };
+
+  const showResetEverything = localEvidence.length > 0 || !targetJob.isSample;
 
   useEffect(() => {
     return () => clearJustAdded();
@@ -90,9 +99,9 @@ export default function EvidenceVaultScreen() {
         />
       </View>
 
-      {localEvidence.length > 0 ? (
+      {showResetEverything ? (
         <View style={styles.resetRow}>
-          <TextButton label="Reset everything" onPress={resetDemoEvidence} />
+          <TextButton label="Reset everything" onPress={handleResetEverything} />
         </View>
       ) : null}
 

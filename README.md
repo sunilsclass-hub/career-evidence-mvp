@@ -1,9 +1,9 @@
 # Career Evidence (working name)
 
 A React Native + Expo Router prototype exploring an AI-powered Career
-Evidence and Employability platform for university students and
-early-career candidates. **This is a local, offline demo — not a
-finished product.** See `CLAUDE.md` for the full product/engineering
+Evidence and Employability platform for students and early-career
+candidates across the health sciences. **This is a local, offline demo —
+not a finished product.** See `CLAUDE.md` for the full product/engineering
 contract this repo follows.
 
 ## Product purpose
@@ -24,27 +24,63 @@ prototype never quietly upgrades a claim to "verified."
 
 ```
 Welcome
-  → Target Job
-  → Evidence Vault (add local demo evidence)
-  → Evidence Gap Map (rule-based, responds to your local evidence)
-  → Next Evidence Action
+  → Target Job (pick a faculty, then a role — or type your own)
+  → Evidence Vault (add local evidence, tagged to that role's competencies)
+  → Evidence Gap Map (rule-based, responds to your evidence)
+  → Next Evidence Action (commit to a timeframe, mark it finished)
   → Pilot Feedback
 ```
 
-A "Pilot Guide" screen for demo facilitators is reachable from Welcome.
+A "Pilot Guide" screen for demo facilitators is reachable directly at
+`/pilot-guide` (not linked from the student-facing flow).
+
+## The role library
+
+`src/data/roleLibrary.ts` holds 23 hand-curated roles across 8 faculties
+(covering the faculties of JSS AHER, Mysuru), each with exactly 8 ordered
+competencies:
+
+- **Medicine & Public Health** — Public Health Programme Officer,
+  Epidemiology & Surveillance Officer, Clinical Research Associate /
+  Coordinator, Hospital Quality & Accreditation Officer, Medical Writer
+- **Pharmacy** — Pharmacovigilance Associate, Regulatory Affairs
+  Associate, Clinical / Hospital Pharmacist, Pharmaceutical Quality
+  Assurance Analyst
+- **Life Sciences** — Bioinformatics Analyst, Clinical Nutritionist /
+  Dietitian, Microbiology Analyst, Environmental & Water Health Officer,
+  Counselling / Mental Health Associate
+- **Biomedical & Laboratory Sciences** — Medical Laboratory Scientist,
+  Biomedical / Life Sciences Research Associate
+- **Dentistry** — Dental Clinician (Early Career)
+- **Health Management** — Hospital Administration Executive, Health
+  Insurance & Claims Associate
+- **Yoga & Wellness** — Yoga Therapist / Wellness Programme Officer
+- **Research & Academic Pathway** — Academic & Research Pathway (PG,
+  residency, fellowship), Health Data Analyst, Digital Health / Health
+  Informatics Associate
+
+There is no role inference or keyword extraction from a job description —
+a role is only ever scored if the student picks one of these 23, or types
+their own via **Other**, in which case the Gap Map shows an honest notice
+instead of a guess.
+
+**Sample evidence is Health Data Analyst-shaped and only appears for that
+role.** Every other role starts with an empty Evidence Vault and its
+empty state — an empty map that's true is better than a full map that's
+irrelevant.
 
 ## Routes
 
-| Route              | Purpose                                                            |
-| ------------------ | ------------------------------------------------------------------- |
-| `/`                 | Welcome — headline + 4-step value proposition                      |
-| `/target-job`       | Sample target role, company, job description                      |
-| `/evidence`         | Evidence Vault — sample + locally added evidence, reset control    |
-| `/add-evidence`     | Form to add one local demo evidence item                           |
-| `/gap-map`          | Evidence Gap Map — rule-based, updates from local evidence          |
-| `/next-action`      | Recommended next evidence-building project                         |
-| `/pilot-feedback`   | Structured feedback form (local only)                              |
-| `/pilot-guide`      | 5-minute facilitator script + observation questions (not for students) |
+| Route              | Purpose                                                                 |
+| ------------------- | ------------------------------------------------------------------------ |
+| `/`                 | Welcome — headline + 4-step value proposition                          |
+| `/target-job`       | Two-step role picker (faculty → role, or Other), company, job description |
+| `/evidence`         | Evidence Vault — sample (Health Data Analyst only) + local evidence, reset control |
+| `/add-evidence`     | Form to add one evidence item, tagged against the selected role's competencies |
+| `/gap-map`          | Evidence Gap Map — rule-based, scores against the selected role's competencies |
+| `/next-action`      | Recommended next evidence-building project, with a commitment + finish step |
+| `/pilot-feedback`   | Structured feedback form (local only)                                  |
+| `/pilot-guide`      | 5-minute facilitator script + observation questions (not linked publicly) |
 
 ## How to run locally
 
@@ -67,19 +103,24 @@ npx expo export --platform android   # Verify the native JS bundle builds
 
 ## Demo / pilot testing instructions
 
-1. Open the app — a small "Demo mode: sample data and local-only
-   changes." notice appears under the header on every screen.
-2. From Welcome, a facilitator can tap **Open Pilot Guide** for the
-   5-minute testing script and observation questions.
-3. Walk a student through Target Job → Evidence Vault → Gap Map →
-   Next Evidence Action → Pilot Feedback.
-4. In Evidence Vault, add one evidence item with skills like
-   `Python, statistics, data cleaning, business interpretation` and
-   watch the Gap Map update with a transparent "Updated from your demo
-   evidence" explanation — no AI involved, just simple keyword rules.
-5. After feedback is submitted, use **Reset demo** (also available on
-   Evidence Vault) to clear local evidence and any facilitator notes
-   before the next student sits down.
+1. From Welcome, tap **See what I can prove** to start.
+2. On Target Job, pick a faculty, then a role within it (or **Other** to
+   type a custom role), then **Analyse My Target**.
+3. On Evidence Vault, tap **+ Add Evidence**, fill in a title and type,
+   tick which of the role's competencies this work demonstrates, and
+   optionally check "Is there something you could actually show
+   someone?" — then **Save Evidence**.
+4. Tap **Build My Evidence Map** and watch the Gap Map reflect exactly
+   the competencies you ticked, with a transparent "Updated from your
+   demo evidence" explanation — no AI involved, just transparent rules
+   based on evidence type.
+5. Continue to Next Evidence Action, add it to your plan, and pick when
+   you'll finish it.
+6. On Pilot Feedback (or Evidence Vault), use **Reset everything**
+   before the next student sits down — this clears local evidence, the
+   selected faculty/role, company, job description, and the action
+   plan/commitment, restoring the original Health Data Analyst sample
+   state.
 
 All state is in-memory only (React Context, no `AsyncStorage`). A page
 reload returns to the original sample data.
@@ -117,22 +158,38 @@ https://docs.expo.dev/accounts/programmatic-access/).
 - Supabase, any database, or persistence beyond a single session
 - Authentication / accounts
 - Real AI evidence analysis (the Gap Map uses simple, transparent
-  keyword rules — clearly labelled as such)
+  rules based on evidence type — clearly labelled as such)
 - File uploads or cloud storage
 - Analytics or tracking
 - Payments
 - Resume builder, job search, employer/university dashboards, social
   features, notifications, tab navigation
+- Role inference from a job description (roles are hand-curated only)
 
 ## Engineering notes
 
 - Expo SDK 57, Expo Router (file-based routing), TypeScript strict mode
 - All screens under `app/`; reusable logic under `src/` (`components/`,
   `data/`, `state/`, `types/`, `theme/`, `utils/`)
+- `src/data/roleLibrary.ts` is the hand-curated role/competency library
+  (23 roles, 8 faculties); `HEALTH_DATA_ANALYST_ROLE_ID` and
+  `OTHER_ROLE_ID` mark the two special cases (sample evidence, and the
+  unscored custom-role path)
 - `src/state/EvidenceContext.tsx` holds evidence in memory and exposes
-  `addEvidence()` / `resetDemoEvidence()`
+  `addEvidence()`, `resetDemoEvidence()`, and `syncSampleEvidenceForRole()`
+  (clears/restores the Health Data Analyst sample set when the selected
+  role changes, without touching local evidence)
+- `src/state/TargetJobContext.tsx` holds the selected target job and the
+  Next Evidence Action's commitment/finished state together, so
+  `resetAll()` can clear both in one call ("Reset everything")
 - `src/utils/buildDemoGapMap.ts` is a small, pure, typed function that
-  derives the Gap Map and Readiness Snapshot from the fixed sample
-  baseline plus current local evidence
+  derives the Gap Map and Readiness Snapshot from whatever evidence
+  currently exists, using evidence **source type** (project with/without
+  an output, coursework, certificate, etc.) as the tiering rule — not
+  what the student typed
+- Evidence is tagged against competencies via an exact multi-select (the
+  student ticks which of the selected role's 8 competencies a piece of
+  evidence demonstrates) rather than free text, so it reliably matches
+  the Gap Map's scoring
 - Full product/engineering rules live in `CLAUDE.md` — read it before
   making product or architecture decisions in this repo

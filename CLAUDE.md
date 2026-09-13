@@ -31,10 +31,28 @@ such — never upgraded to "verified" by AI polish alone.
 
 The MVP has four core capabilities:
 
-1. **Target Job** — the role the student is aiming for.
+1. **Target Job** — the role the student is aiming for, picked from a
+   hand-curated role library (by faculty, then role), or typed as "Other."
 2. **Evidence Vault** — the user's actual proof of work.
 3. **Evidence Gap Map** — evidence vs. target role, honestly scored.
 4. **Next Evidence Action** — the single best next thing to go prove.
+
+## Role library rules
+
+- Target roles come from a hand-curated library (`src/data/roleLibrary.ts`),
+  grouped by faculty. Never infer a role, or its competencies, from a
+  free-text job description or keyword extraction.
+- A role outside the library ("Other") is never scored — show an honest
+  notice instead of guessing at competencies.
+- Evidence-to-competency matching must be exact and selectable: the
+  student ticks which of the target role's own competencies a piece of
+  evidence demonstrates (multi-select against that fixed list). Never
+  free text or fuzzy/partial string matching for this — it silently
+  breaks the Gap Map by matching nothing.
+- Sample evidence is written for exactly one role (currently Health Data
+  Analyst) and must not be shown against any other role. An empty,
+  honest Evidence Vault for an unsupported role is correct behaviour, not
+  a bug to paper over with irrelevant sample data.
 
 ## Not the product
 

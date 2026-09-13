@@ -1,5 +1,4 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AppHeader } from '../src/components/AppHeader';
@@ -9,6 +8,7 @@ import { Screen } from '../src/components/Screen';
 import { SecondaryButton } from '../src/components/SecondaryButton';
 import { SectionHeader } from '../src/components/SectionHeader';
 import { mockNextAction } from '../src/data/mockNextAction';
+import { useTargetJob } from '../src/state/TargetJobContext';
 import { colors } from '../src/theme/colors';
 import { radius, spacing, typography } from '../src/theme/spacing';
 import type { ActionCommitment } from '../src/types/nextAction';
@@ -27,9 +27,9 @@ const commitmentPhrase: Record<ActionCommitment, string> = {
 
 export default function NextActionScreen() {
   const router = useRouter();
-  const [added, setAdded] = useState(false);
-  const [commitment, setCommitment] = useState<ActionCommitment | null>(null);
-  const [finished, setFinished] = useState(false);
+  const { actionPlan, setActionAdded, setActionCommitment, setActionFinished } =
+    useTargetJob();
+  const { added, commitment, finished } = actionPlan;
 
   return (
     <Screen>
@@ -93,7 +93,7 @@ export default function NextActionScreen() {
               question="When will you finish this?"
               options={commitmentOptions}
               selected={commitment}
-              onSelect={setCommitment}
+              onSelect={setActionCommitment}
             />
           ) : (
             <View style={styles.commitmentCard}>
@@ -108,7 +108,7 @@ export default function NextActionScreen() {
               ) : (
                 <SecondaryButton
                   label="I've finished this"
-                  onPress={() => setFinished(true)}
+                  onPress={() => setActionFinished(true)}
                 />
               )}
             </View>
@@ -122,7 +122,7 @@ export default function NextActionScreen() {
       ) : (
         <PrimaryButton
           label="Add This To My Action Plan"
-          onPress={() => setAdded(true)}
+          onPress={() => setActionAdded(true)}
         />
       )}
     </Screen>
